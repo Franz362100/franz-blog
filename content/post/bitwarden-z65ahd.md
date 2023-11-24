@@ -3,8 +3,13 @@ title: Bitwarden部署与备份
 slug: bitwarden-z65ahd
 url: /post/bitwarden-z65ahd.html
 date: '2023-11-20 10:22:37'
-lastmod: '2023-11-24 09:55:55'
+lastmod: '2023-11-24 09:57:03'
 toc: true
+tags:
+  - Docker
+categories:
+  - 技术分享
+keywords: Docker
 isCJKLanguage: true
 ---
 

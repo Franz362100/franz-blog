@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on Franz'Blog</title><link>https://blog.franz1024.com/tags/docker/</link><description>Recent content in Docker on Franz'Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-Hans</language><lastBuildDate>Mon, 20 Nov 2023 10:22:37 +0000</lastBuildDate><atom:link href="https://blog.franz1024.com/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Bitwarden部署与备份</title><link>https://blog.franz1024.com/post/bitwarden-z65ahd.html</link><pubDate>Mon, 20 Nov 2023 10:22:37 +0000</pubDate><guid>https://blog.franz1024.com/post/bitwarden-z65ahd.html</guid><description>&lt;ol>
+&lt;li>
+&lt;p>生成一个 admin 用户管理页面的 token&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Bash" data-lang="Bash">&lt;span class="line">&lt;span class="cl">openssl rand -base64 &lt;span class="m">48&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>使用docker部署&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Bash" data-lang="Bash">&lt;span class="line">&lt;span class="cl">docker run -d --name vaultwarden &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">SIGNUPS_ALLOWED&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">false&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">INVITATIONS_ALLOWED&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">false&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">ADMIN_TOKEN&lt;/span>&lt;span class="o">=&lt;/span>上面生成得Base64 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">LOG_FILE&lt;/span>&lt;span class="o">=&lt;/span>/data/log.log &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">LOG_LEVEL&lt;/span>&lt;span class="o">=&lt;/span>info &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -p 8081:80 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -v /root/vaultwarden/:/data/ &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> vaultwarden/server:latest
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>对bitwarden进行定时备份&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>按照官方说明，现执行 docker 镜像，获取 token。这里的镜像一大部分都是 Rclone。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Bash" data-lang="Bash">&lt;span class="line">&lt;span class="cl">docker run –rm -it &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>–mount &lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>volume,source&lt;span class="o">=&lt;/span>vaultwarden-rclone-data,target&lt;span class="o">=&lt;/span>/config/ &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>ttionya/vaultwarden-backup:latest rclone config
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>配置Rclone&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>执行备份定时备份的docker容器&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Bash" data-lang="Bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 七牛云 docker 备份配置,这里仅参考，正式备份内容见下方备份到多个位置&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run -d &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --restart&lt;span class="o">=&lt;/span>always &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --name vaultwarden_backup_qiniu &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --volumes-from&lt;span class="o">=&lt;/span>vaultwarden &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --mount &lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>volume,source&lt;span class="o">=&lt;/span>vaultwarden-rclone-data,target&lt;span class="o">=&lt;/span>/config/ &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">DATA_DIR&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/data&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">RCLONE_REMOTE_NAME&lt;/span>&lt;span class="o">=&lt;/span>BitwardenBackup_qiniu &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">RCLONE_REMOTE_DIR&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;bitwarden-1024&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">ZIP_TYPE&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;7z&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">CRON&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;0 */8 * * *&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">ZIP_PASSWORD&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;压缩密码&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">BACKUP_KEEP_DAYS&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;30&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> ttionya/vaultwarden-backup:latest
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>从备份中还原&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>停止bitwarden容器&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>还原命令&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Bash" data-lang="Bash">&lt;span class="line">&lt;span class="cl"> docker run --rm -it &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --mount &lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>bind,source&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/root/vaultwarden&amp;#34;&lt;/span>,target&lt;span class="o">=&lt;/span>/data/ &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --mount &lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>bind,source&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">pwd&lt;/span>&lt;span class="k">)&lt;/span>,target&lt;span class="o">=&lt;/span>/bitwarden/restore/ &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">DATA_DIR&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/data&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> ttionya/vaultwarden-backup:latest restore &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --zip-file 文件名称 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -p 压缩密码
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>启动bitwarden容器&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

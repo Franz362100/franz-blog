@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Linux on Franz'Blog</title><link>https://blog.franz1024.com/tags/linux/</link><description>Recent content in Linux on Franz'Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-Hans</language><lastBuildDate>Fri, 10 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.franz1024.com/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>部署简易Kafka测试环境</title><link>https://blog.franz1024.com/p/%E9%83%A8%E7%BD%B2%E7%AE%80%E6%98%93kafka%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/</link><pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate><guid>https://blog.franz1024.com/p/%E9%83%A8%E7%BD%B2%E7%AE%80%E6%98%93kafka%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/</guid><description>&lt;p>因为Kafka依赖于&lt;a class="link" href="https://so.csdn.net/so/search?q=zookeeper&amp;amp;spm=1001.2101.3001.7020" target="_blank" rel="noopener"
+>zookeeper&lt;/a>做分布式管理，因此需要先安装zookeeper&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>zookeeper启动&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-docker" data-lang="docker">&lt;span class="line">&lt;span class="cl">docker run -d --name zookeeper -p 2181:2181 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>-t wurstmeister/zookeeper&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>kafka启动&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-docker" data-lang="docker">&lt;span class="line">&lt;span class="cl">docker run -d --name kafka -p 9092:9092 -e &lt;span class="nv">KAFKA_BROKER_ID&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">0&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>-e &lt;span class="nv">KAFKA_ZOOKEEPER_CONNECT&lt;/span>&lt;span class="o">=&lt;/span>124.223.***.176:2181 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>-e &lt;span class="nv">KAFKA_ADVERTISED_LISTENERS&lt;/span>&lt;span class="o">=&lt;/span>PLAINTEXT://124.223.***.176:9092 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>-e &lt;span class="nv">KAFKA_LISTENERS&lt;/span>&lt;span class="o">=&lt;/span>PLAINTEXT://0.0.0.0:9092 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span>-t wurstmeister/kafka&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;/ol></description></item><item><title>Nginx重启的方法以及注意事项</title><link>https://blog.franz1024.com/post/nginx-restart-method-and-precautions-zyhlkb.html</link><pubDate>Thu, 26 Oct 2023 17:17:03 +0000</pubDate><guid>https://blog.franz1024.com/post/nginx-restart-method-and-precautions-zyhlkb.html</guid><description>&lt;h2 id="1利用-linux-进程管理重启">1.利用 linux 进程管理重启&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">ps -ef&lt;span class="p">|&lt;/span>grep nginx
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>将会列出 nginx 相关的进程号，如下所示&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">root@ubuntu:~# ps -ef&lt;span class="p">|&lt;/span>grep nginx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">root &lt;span class="m">1773&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="m">0&lt;/span> May12 ? 00:00:00 nginx: master process nginx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nginx &lt;span class="m">22672&lt;/span> &lt;span class="m">1773&lt;/span> &lt;span class="m">0&lt;/span> 01:58 ? 00:00:00 nginx: worker process
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nginx &lt;span class="m">22673&lt;/span> &lt;span class="m">1773&lt;/span> &lt;span class="m">0&lt;/span> 01:58 ? 00:00:00 nginx: worker process
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">root &lt;span class="m">23617&lt;/span> &lt;span class="m">20075&lt;/span> &lt;span class="m">0&lt;/span> 02:29 pts/1 00:00:00 grep --color&lt;span class="o">=&lt;/span>auto nginx
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>之后再用 kil 命令即可终止 nginx 进程，再重新执行 nginx 即可&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">kill&lt;/span> -9 pid
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>也可以多个同时终止&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">kill&lt;/span> -9 &lt;span class="m">1773&lt;/span> &lt;span class="m">22672&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这样比较麻烦，而且这个过程中会中断服务的提供。那么有没有热配置，或者是不重启就可以生效呢？&lt;/p>
+&lt;p>答案当然是有的。那就是使用 nginx -s reload 命令。&lt;/p>
+&lt;h2 id="2-nginx--s-reload">2. nginx -s reload&lt;/h2>
+&lt;p>s 代表的是向主进程发送信号。其中信号有 4 个，stop, quit, reopen, reload。&lt;/p>
+&lt;p>reload 就是重新加载的意思。&lt;code>nginx -s reload&lt;/code>​ 命令，合起来的作用就是重新加载配置文件。使用此命令可以做到无缝切换服务&lt;/p>
+&lt;blockquote>
+&lt;p>注意事项&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>​&lt;span style="font-weight: bold;" data-type="strong">&lt;code>nginx -s reload&lt;/code>&lt;/span>​ &lt;span style="font-weight: bold;" data-type="strong"> 是平滑重启,不会强制结束正在工作的连接,需要等所有连接都结束才会重启。&lt;/span>&lt;/li>
+&lt;li>&lt;span style="font-weight: bold;" data-type="strong">强烈建议在使用&lt;/span> &lt;span style="font-weight: bold;" data-type="strong">&lt;code>nginx -s reload&lt;/code>&lt;/span>​&lt;span style="font-weight: bold;" data-type="strong">时使用&lt;/span> &lt;span style="font-weight: bold;" data-type="strong">&lt;code>nginx -t&lt;/code>&lt;/span>​&lt;span style="font-weight: bold;" data-type="strong">检查配置文件是否正确&lt;/span>&lt;/li>
+&lt;/ul>
+&lt;p>‍&lt;/p></description></item></channel></rss>
